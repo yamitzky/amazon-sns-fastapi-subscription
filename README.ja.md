@@ -1,6 +1,6 @@
 # Amazon SNS FastAPI Subscription
 
-A sample implementation of Amazon SNS HTTP/HTTPS endpoint using FastAPI
+Amazon SNS の HTTP/HTTPS エンドポイントを FastAPI で実装するサンプル
 
 https://zenn.dev/yamitzky/scraps/649f03dcde989a
 
@@ -11,25 +11,25 @@ https://zenn.dev/yamitzky/scraps/649f03dcde989a
 
 ## Commands
 
-Installation
+インストール
 
 ```
 uv sync
 ```
 
-Launch (dev mode)
+起動 (dev mode)
 
 ```bash
 uv run fastapi dev app
 ```
 
-Launch (production mode)
+起動 (production mode)
 
 ```bash
 uv run fastapi run app
 ```
 
-Testing
+テスト
 
 ```bash
 uv run pytest tests
