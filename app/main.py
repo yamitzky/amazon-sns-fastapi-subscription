@@ -9,6 +9,7 @@ from app.models import (
     sns_message_adapter,
 )
 from app.settings import Settings, get_settings
+from app.signature import SignatureVerifier, get_signature_verifier
 
 app = FastAPI()
 
@@ -22,6 +23,7 @@ logger = logging.getLogger(__name__)
 @app.post("/")
 async def sns_receiver(
     request: Request,
+    signature_verifier: Annotated[SignatureVerifier, Depends(get_signature_verifier)],
     settings: Annotated[Settings, Depends(get_settings)],
 ):
     try:
@@ -32,5 +34,8 @@ async def sns_receiver(
 
     if message.topic_arn != settings.sns_topic_arn:
         raise HTTPException(status_code=400, detail="Invalid TopicArn")
+
+    if not await signature_verifier.verify(message):
+        raise HTTPException(status_code=400, detail="Invalid signature")
 
     return "ok"
