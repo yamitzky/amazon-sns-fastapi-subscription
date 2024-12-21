@@ -1,11 +1,10 @@
-from typing import Annotated, Literal, Optional
+from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, HttpUrl, TypeAdapter
 from pydantic.alias_generators import to_pascal
 
 
 class SNSMessageBase(BaseModel):
-    type: Literal["Notification", "SubscriptionConfirmation", "UnsubscribeConfirmation"]
     message_id: str
     topic_arn: str
     timestamp: str
@@ -22,7 +21,7 @@ class SNSMessageBase(BaseModel):
 
 class SNSNotification(SNSMessageBase):
     type: Literal["Notification"]
-    subject: Optional[str] = None
+    subject: str | None = None
 
 
 class SNSSubscription(SNSMessageBase):

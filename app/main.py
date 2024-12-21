@@ -10,6 +10,7 @@ from app.models import (
 )
 from app.settings import Settings, get_settings
 from app.signature import SignatureVerifier, get_signature_verifier
+from app.subscriber import URLSubscriber, get_url_subscriber
 
 app = FastAPI()
 
@@ -24,8 +25,12 @@ logger = logging.getLogger(__name__)
 async def sns_receiver(
     request: Request,
     signature_verifier: Annotated[SignatureVerifier, Depends(get_signature_verifier)],
+    url_subscriber: Annotated[URLSubscriber, Depends(get_url_subscriber)],
     settings: Annotated[Settings, Depends(get_settings)],
 ):
+    """
+    SNSメッセージを受信して処理するエンドポイント
+    """
     try:
         # text/plain で送られてくるため、引数にはせず、json に変換
         message = sns_message_adapter.validate_json(await request.body())
@@ -38,4 +43,14 @@ async def sns_receiver(
     if not await signature_verifier.verify(message):
         raise HTTPException(status_code=400, detail="Invalid signature")
 
-    return "ok"
+    if message.type == "SubscriptionConfirmation":
+        if await url_subscriber.subscribe(message.subscribe_url):
+            return {"status": "success", "message": "Subscription confirmed"}
+        raise HTTPException(status_code=400, detail="Invalid SubscribeURL")
+
+    elif message.type == "Notification":
+        logger.info(f"Received SNS message: {message.message}")
+        return {"status": "success", "message": "Message received"}
+
+    elif message.type == "UnsubscribeConfirmation":
+        return {"status": "success", "message": "Unsubscribe confirmed"}
