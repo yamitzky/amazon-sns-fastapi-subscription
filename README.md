@@ -2,7 +2,7 @@
 
 A sample implementation of Amazon SNS HTTP/HTTPS endpoint using FastAPI
 
-https://zenn.dev/yamitzky/scraps/649f03dcde989a
+https://zenn.dev/yamitzky/articles/73a7d518062509
 
 ## Requirements
 
